@@ -1,8 +1,7 @@
-import { useState } from "react";
 import styled from "styled-components";
 import Episode from "../Episode";
 import Season from "../Season";
-
+import { useImmer } from "use-immer";
 const Title = styled.h1`
   text-decoration: underline;
   font-size: 1.7rem;
@@ -19,7 +18,7 @@ const StyledShow = styled.div`
 `;
 
 export default function Show({ initialSeasons = [] }) {
-  const [seasons, setSeasons] = useState(initialSeasons);
+  const [seasons, updateSeasons] = useImmer(initialSeasons);
 
   function handleToggleHasSeen(seasonNumber, episodeNumber) {
     // Wrong state mutation!
@@ -32,7 +31,7 @@ export default function Show({ initialSeasons = [] }) {
     //   console.log(prevSeasons);
     //   return prevSeasons;
     // });
-    // Valid state update
+    /* Valid state update
     setSeasons(
       // we use map directly on out state variable seasons
       seasons.map((season) => {
@@ -58,6 +57,18 @@ export default function Show({ initialSeasons = [] }) {
         return season;
       })
     );
+    */
+    // Using the useImmer hook allows us to perform a state update by changing the corresponding values directly
+    updateSeasons((draft) => {
+      // identify the season object via find
+      const season = draft.find((season) => seasonNumber === season.number);
+      // identfiy the episode object via find
+      const episode = season.episodes.find(
+        (episode) => episodeNumber === episode.number
+      );
+      // manipulate the value of the object directly
+      episode.hasSeen = !episode.hasSeen;
+    });
   }
 
   return (
