@@ -22,19 +22,42 @@ export default function Show({ initialSeasons = [] }) {
   const [seasons, setSeasons] = useState(initialSeasons);
 
   function handleToggleHasSeen(seasonNumber, episodeNumber) {
-    setSeasons((prevSeasons) => {
-      const season = prevSeasons.find(({ number }) => number === seasonNumber);
-
-      const episode = season.episodes.find(
-        ({ number }) => number === episodeNumber
-      );
-
-      episode.hasSeen = !episode.hasSeen;
-
-      console.log(prevSeasons);
-
-      return prevSeasons;
-    });
+    // Wrong state mutation!
+    // setSeasons((prevSeasons) => {
+    //   const season = prevSeasons.find(({ number }) => number === seasonNumber);
+    //   const episode = season.episodes.find(
+    //     ({ number }) => number === episodeNumber
+    //   );
+    //   episode.hasSeen = !episode.hasSeen;
+    //   console.log(prevSeasons);
+    //   return prevSeasons;
+    // });
+    // Valid state update
+    setSeasons(
+      // we use map directly on out state variable seasons
+      seasons.map((season) => {
+        // identify the season to update by seasonNumber parameter
+        if (season.number === seasonNumber) {
+          // create a new season object by spreading
+          const updatedSeason = {
+            ...season,
+            // map through episodes to identify the episode to toggle hasSeen value
+            episodes: season.episodes.map((episode) => {
+              if (episodeNumber !== episode.number) {
+                // if not the identified one return as is
+                return episode;
+              }
+              // otherwise create a new episode object with toggled hasSeen value
+              return { ...episode, hasSeen: !episode.hasSeen };
+            }),
+          };
+          // return the (updated) newSeason object
+          return updatedSeason;
+        }
+        // if not the identified season return as is
+        return season;
+      })
+    );
   }
 
   return (
@@ -48,9 +71,8 @@ export default function Show({ initialSeasons = [] }) {
               number={episode.number}
               title={episode.title}
               hasSeen={episode.hasSeen}
-              onToggleHasSeen={() => {
-                handleToggleHasSeen(season.number, episode.number);
-              }}
+              onToggleHasSeen={handleToggleHasSeen}
+              seasonNumber={season.number}
             />
           ))}
         </Season>

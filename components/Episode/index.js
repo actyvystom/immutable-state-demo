@@ -58,7 +58,13 @@ const StyledEpisode = styled.section`
   }
 `;
 
-export default function Episode({ title, onToggleHasSeen, hasSeen }) {
+export default function Episode({
+  title,
+  onToggleHasSeen,
+  hasSeen,
+  seasonNumber,
+  number,
+}) {
   return (
     <StyledEpisode>
       <Title hasSeen={hasSeen}>{title}</Title>
@@ -66,7 +72,7 @@ export default function Episode({ title, onToggleHasSeen, hasSeen }) {
         <Button
           type="button"
           onClick={() => {
-            onToggleHasSeen();
+            onToggleHasSeen(seasonNumber, number);
           }}
           aria-label={hasSeen ? "Mark as unwatched" : "Mark as watched"}
           hasSeen={hasSeen}
